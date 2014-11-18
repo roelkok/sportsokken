@@ -1,8 +1,12 @@
-var through = require("through");
+var through2 = require("through2");
 var css = require("css");
 var _ = require("underscore");
 var fs = require("fs");
 var path = require("path");
+var mkdirp = require("mkdirp");
+
+var INITIALIZED = false;
+var outputCssFile = path.resolve("./out/css/main.css");
 
 function deepCopy(obj) {
 	return JSON.parse(JSON.stringify(obj));
@@ -13,32 +17,51 @@ function adler32(a) {for(var b=65521,c=1,d=0,e=0,f;f=a.charCodeAt(e++);d=(d+c)%b
 module.exports = function(file, opts) {
 
 	if(!/\.css$/.test(file)) {
-		return through();
+		return through2();
 	}
 	
 	var buffer = "";
 
+	return through2(
+		function(data, enc, next) {
+			if(!INITIALIZED) {
+				console.log("Initialize");
+				INITIALIZED = true;
 
-	// TODO This shouldn't be here
-	var outputCssFile = "./out/css/main.css";
-
-	fs.writeFile(path.resolve(outputCssFile), "", function(err) {
-		if(err) {
-			console.log("Couldn't create output css file. [" + outputCssFile + "]");
-			console.log(err);
-		}
-	});
-
-	return through(
-		function(data) {
-			buffer += data.toString();
+				// TODO This shouldn't be here
+				mkdirp(path.dirname(outputCssFile), function(err) {
+					if(err) {
+						// TODO Should stop
+						console.log(err);
+					}
+					else {
+						fs.writeFile(outputCssFile, "", function(err) {
+							if(err) {
+								// TODO Should stop
+								console.log("Couldn't create output css file. [" + outputCssFile + "]");
+								console.log(err);
+							}
+							else {
+								console.log("Cleared file");
+								buffer += data.toString();
+								next();
+							}
+						});
+					}
+				});
+			}
+			else {
+				buffer += data.toString();
+				next();
+			}
 		},
-		function() {
+		function(end) {
 			var tree = css.parse(buffer);
 			var newTree = {};
 			var map = {};
 			var prefix = "r" + adler32(buffer).toString(36);
 			var counter = 0;
+			var stream = this;
 
 			_(tree).each(function(value, key, list) {
 				if(key == "stylesheet") {
@@ -90,11 +113,11 @@ module.exports = function(file, opts) {
 					// TODO Handle append css file error
 					console.log(err);
 				}
-			});
 
-			this.queue("module.exports = " + JSON.stringify(map));
-			return this.queue(null);
+				stream.push("module.exports = " + JSON.stringify(map));
+				console.log("Finished parsing css file");
+				end();
+			});
 		}
 	);
-
 };
