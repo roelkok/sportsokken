@@ -1,0 +1,29 @@
+{
+  "name": "sportsokken",
+  "version": "0.1.0",
+  "description": "Require css from your node modules and obfuscates css class names to avoid collisions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roelkok/sportsokken.git"
+  },
+  "keywords": [
+    "css",
+    "browserify",
+    "browserify-transform"
+  ],
+  "author": "Roel Kok",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/roelkok/sportsokken/issues"
+  },
+  "homepage": "https://github.com/roelkok/sportsokken",
+  "dependencies": {
+    "css": "^2.1.0",
+    "through": "^2.3.6",
+    "underscore": "^1.7.0"
+  }
+}
