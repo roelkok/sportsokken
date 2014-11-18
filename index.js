@@ -40,7 +40,7 @@ module.exports = function(file, opts) {
 			var prefix = "r" + adler32(buffer).toString(36);
 			var counter = 0;
 
-			var _(tree).each(function(value, key, list) {
+			_(tree).each(function(value, key, list) {
 				if(key == "stylesheet") {
 					newTree[key] = _(value).reduce(function(memo, value, key, list) {
 						memo = Object.create(memo);
