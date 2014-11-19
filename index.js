@@ -14,6 +14,12 @@ function deepCopy(obj) {
 
 function adler32(a) {for(var b=65521,c=1,d=0,e=0,f;f=a.charCodeAt(e++);d=(d+c)%b)c=(c+f)%b;return c|d<<16}
 
+function camelCase(str) {
+	return str.replace(/-([a-z])/g, function(match) {
+		return match[1].toUpperCase();
+	});
+}
+
 module.exports = function(file, opts) {
 
 	if(!/\.css$/.test(file)) {
@@ -78,6 +84,7 @@ module.exports = function(file, opts) {
 											// Search selector for class names and replace them
 											// TODO Make sure this sures catches all situations (maybe use tokenizer?)
 											return selector.replace(/\.([_a-z][_a-z0-9-]*)/gi, function(match, cssClassName) {
+												cssClassName = camelCase(cssClassName);
 												if(!map[cssClassName]) {
 													map[cssClassName] = prefix + counter.toString(36);
 													counter++;
