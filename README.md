@@ -1,7 +1,7 @@
 Sportsokken
 ===========
 
-Require css from your node modules in your Browserify project and obfuscate class names in each stylesheet with a prefix to avoid collisions.
+Require css from your js files in your Browserify project and obfuscate class names in each stylesheet with a prefix to avoid collisions.
 
 ## Install
 
@@ -31,7 +31,7 @@ gulp.task("default", function() {
 });
 ```
 
-## Basic Example using Hbsfy (Handlebars transform)
+## Basic example using Hbsfy (Handlebars transform)
 
 my-module.css
 ```
