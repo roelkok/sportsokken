@@ -1,7 +1,6 @@
 var through2 = require("through2");
 var css = require("css");
 var _ = require("underscore");
-var fs = require("fs");
 var path = require("path");
 var source = require("vinyl-source-stream");
 var dest = require("vinyl-fs").dest;
@@ -23,15 +22,16 @@ function camelCase(str) {
  * b - Browserify instance
  */
 var Sportsokken = function(b, opts) {
+	if(!(this instanceof Sportsokken)) {
+		new Sportsokken(b, opts);
+		return b;
+	}
+
 	_(this).bindAll(
 		"transform"
 	);
 	var self = this;
-
-	this.cssStream = null;
-
 	this.b = b;
-
 	this.cache = {};
 
 	b.transform(this.transform);
@@ -63,10 +63,11 @@ var Sportsokken = function(b, opts) {
 			}
 		}
 	});
-
 };
 
 _.extend(Sportsokken.prototype, {
+
+	cssStream: null,
 
 	transform: function(file, opts) {
 		if(!/\.css$/.test(file)) {
