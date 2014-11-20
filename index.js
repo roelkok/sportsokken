@@ -4,7 +4,6 @@ var _ = require("underscore");
 var path = require("path");
 var source = require("vinyl-source-stream");
 var dest = require("vinyl-fs").dest;
-var mkdirp = require("mkdirp");
 
 function deepCopy(obj) {
 	return JSON.parse(JSON.stringify(obj));
