@@ -35,6 +35,8 @@ var Sportsokken = function(b, opts) {
 
 	this.b = b;
 
+	this.cache = {};
+
 	b.transform(this.transform);
 
 	b.on("bundle", function(pipeline) {
@@ -53,6 +55,21 @@ var Sportsokken = function(b, opts) {
 		));
 
 		console.log("onbuncdle");
+	});
+
+	b.on("dep", function(dep) {
+		console.log(dep.id, dep.file);
+
+		// TODO Add to css stream
+		if(/\.css$/.test(file)) {
+			if(self.cache[dep.file]) {
+				self.cssStream.write(self.cache[dep.file]);
+			}
+		}
+	});
+
+	b.on("update", function(changingDeps) {
+
 	});
 
 };
