@@ -7,9 +7,6 @@ var source = require("vinyl-source-stream");
 var dest = require("vinyl-fs").dest;
 var mkdirp = require("mkdirp");
 
-var INITIALIZED = false;
-var outputCssFile = path.resolve("./out/css/main.css");
-
 function deepCopy(obj) {
 	return JSON.parse(JSON.stringify(obj));
 }
@@ -41,12 +38,14 @@ var Sportsokken = function(b, opts) {
 
 	b.on("bundle", function(pipeline) {
 		self.cssStream = through2();
+		self.deps = [];
 
 		pipeline.push(through2.obj(
 			{objectMode: true},
 			null,
 			function(end) {
-				// TODO Clean up cache
+				// Clean up cache
+				self.cache = _(self.cache).pick(self.deps);
 				self.cssStream
 					.pipe(source("main.css"))
 					.pipe(dest("./out/css"));
@@ -56,18 +55,13 @@ var Sportsokken = function(b, opts) {
 	});
 
 	b.on("dep", function(dep) {
-
-		// TODO Add to css stream
+		// Add to css stream
 		if(/\.css$/.test(dep.file)) {
-			console.log(dep.file);
+			self.deps.push(dep.file);
 			if(self.cache[dep.file]) {
 				self.cssStream.write(self.cache[dep.file]);
 			}
 		}
-	});
-
-	b.on("update", function(changingDeps) {
-
 	});
 
 };
@@ -142,7 +136,6 @@ _.extend(Sportsokken.prototype, {
 				self.cache[file] = css.stringify(newTree);
 
 				this.push("module.exports = " + JSON.stringify(map));
-				console.log("Finished parsing css file: " + file);
 				end();
 			}
 		);
