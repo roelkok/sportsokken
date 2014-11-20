@@ -46,10 +46,10 @@ var Sportsokken = function(b, opts) {
 			{objectMode: true},
 			null,
 			function(end) {
+				// TODO Clean up cache
 				self.cssStream
 					.pipe(source("main.css"))
 					.pipe(dest("./out/css"));
-
 				end();
 			}
 		));
@@ -58,10 +58,10 @@ var Sportsokken = function(b, opts) {
 	});
 
 	b.on("dep", function(dep) {
-		console.log(dep.id, dep.file);
 
 		// TODO Add to css stream
-		if(/\.css$/.test(file)) {
+		if(/\.css$/.test(dep.file)) {
+			console.log(dep.file);
 			if(self.cache[dep.file]) {
 				self.cssStream.write(self.cache[dep.file]);
 			}
@@ -86,36 +86,8 @@ _.extend(Sportsokken.prototype, {
 
 		return through2(
 			function(data, enc, next) {
-				// if(!INITIALIZED) {
-				// 	console.log("Initialize");
-				// 	INITIALIZED = true;
-
-				// 	// TODO This shouldn't be here
-				// 	mkdirp(path.dirname(outputCssFile), function(err) {
-				// 		if(err) {
-				// 			// TODO Should stop
-				// 			console.log(err);
-				// 		}
-				// 		else {
-				// 			fs.writeFile(outputCssFile, "", function(err) {
-				// 				if(err) {
-				// 					// TODO Should stop
-				// 					console.log("Couldn't create output css file. [" + outputCssFile + "]");
-				// 					console.log(err);
-				// 				}
-				// 				else {
-				// 					console.log("Cleared file");
-				// 					buffer += data.toString();
-				// 					next();
-				// 				}
-				// 			});
-				// 		}
-				// 	});
-				// }
-				// else {
-					buffer += data.toString();
-					next();
-				// }
+				buffer += data.toString();
+				next();
 			},
 			function(end) {
 				var tree = css.parse(buffer);
@@ -169,14 +141,20 @@ _.extend(Sportsokken.prototype, {
 					}
 				});
 
-				// TODO Check if this is the right point in the pipeline to write to stream.
-				// 		Probably doesn't matter if css class names are obfuscated anyway
-				self.cssStream.write(css.stringify(newTree), function() {
+				self.cache[file] = css.stringify(newTree);
 
-					stream.push("module.exports = " + JSON.stringify(map));
-					console.log("Finished parsing css file: " + file);
-					end();
-				});
+				this.push("module.exports = " + JSON.stringify(map));
+				console.log("Finished parsing css file: " + file);
+				end();
+
+				// // TODO Check if this is the right point in the pipeline to write to stream.
+				// // 		Probably doesn't matter if css class names are obfuscated anyway
+				// self.cssStream.write(css.stringify(newTree), function() {
+
+				// 	stream.push("module.exports = " + JSON.stringify(map));
+				// 	console.log("Finished parsing css file: " + file);
+				// 	end();
+				// });
 
 
 				// // Append new css to output css
