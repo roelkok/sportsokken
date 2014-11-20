@@ -53,8 +53,6 @@ var Sportsokken = function(b, opts) {
 				end();
 			}
 		));
-
-		console.log("onbuncdle");
 	});
 
 	b.on("dep", function(dep) {
