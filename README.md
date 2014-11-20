@@ -3,6 +3,12 @@ Sportsokken
 
 Require css from your node modules in your Browserify project and obfuscate class names in each stylesheet with a prefix to avoid collisions.
 
+## Install
+
+```
+npm install sportsokken
+```
+
 ## Setup (using Gulp)
 
 Wrap your Browserify instance in `sportsokken()`. This function returns the Browserify instance so you can use all its methods after wrapping it.
