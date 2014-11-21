@@ -75,6 +75,7 @@ _.extend(Sportsokken.prototype, {
 		
 		var self = this;
 		var buffer = "";
+		var rename = true;
 
 		return through2(
 			function(data, enc, next) {
@@ -101,15 +102,31 @@ _.extend(Sportsokken.prototype, {
 
 										if(key == "selectors") {
 											memo[key] = _(value).map(function(selector) {
+												// Check for stylesheet specific options
+												// TODO If this is not at the top of the file there might be problems currently
+												// TODO Remove declaration
+												if(selector == "@sportsokken") {
+													_(rule["declarations"]).each(function(declaration) {
+														if(declaration["property"] == "rename" && declaration["value"] == "no") {
+															rename = false;
+														}
+													});
+												}
+
 												// Search selector for class names and replace them
-												// TODO Make sure this sures catches all situations (maybe use tokenizer?)
+												// TODO Make sure this catches all situations (maybe use tokenizer?)
 												return selector.replace(/\.([_a-z][_a-z0-9-]*)/gi, function(match, cssClassName) {
-													cssClassName = camelCase(cssClassName);
-													if(!map[cssClassName]) {
-														map[cssClassName] = prefix + counter.toString(36);
-														counter++;
+													var key = camelCase(cssClassName);
+													if(!map[key]) {
+														if(rename) {
+															map[key] = prefix + counter.toString(36);
+															counter++;
+														}
+														else {
+															map[key] = cssClassName;
+														}
 													}
-													return "." + map[cssClassName];
+													return "." + map[key];
 												});
 											});
 										}
