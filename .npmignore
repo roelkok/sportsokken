@@ -26,4 +26,9 @@ node_modules
 
 # Users Environment Variables
 .lock-wscript
-examples/basic/out/
+
+# Git
+.gitignore
+
+# examples
+examples
