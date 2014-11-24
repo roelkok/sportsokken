@@ -4,6 +4,7 @@ var _ = require("underscore");
 var path = require("path");
 var source = require("vinyl-source-stream");
 var dest = require("vinyl-fs").dest;
+var path = require("path");
 
 function deepCopy(obj) {
 	return JSON.parse(JSON.stringify(obj));
@@ -33,6 +34,15 @@ var Sportsokken = function(b, opts) {
 	this.b = b;
 	this.cache = {};
 
+	opts = _.extend({
+		dest: "./out/css/main.css"
+	}, opts);
+	var outputFile = path.basename(opts.dest);
+	var outputDir = path.dirname(opts.dest);
+
+	console.log(outputFile);
+	console.log(outputDir);
+
 	b.transform(this.transform);
 
 	b.on("bundle", function(pipeline) {
@@ -46,8 +56,8 @@ var Sportsokken = function(b, opts) {
 				// Clean up cache
 				self.cache = _(self.cache).pick(self.deps);
 				self.cssStream
-					.pipe(source("main.css"))
-					.pipe(dest("./out/css"));
+					.pipe(source(outputFile))
+					.pipe(dest(outputDir));
 				end();
 			}
 		));
