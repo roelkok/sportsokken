@@ -7,11 +7,16 @@ var sportsokken = require("../../");
 
 gulp.task("default", function() {
 
-	var b = sportsokken(watchify(browserify("./src/main.js", watchify.args)))
+	var b = sportsokken(
+		watchify(browserify("./src/main.js", watchify.args)),
+		{
+			dest: "./out/css/index.css"
+		}
+	)
 		.transform(hbsfy);
 	
 	function rebundle() {
-		b
+		return b
 			.bundle()
 			.pipe(source("main.js"))
 			.pipe(gulp.dest("./out/js"));
@@ -19,6 +24,6 @@ gulp.task("default", function() {
 
 	b.on("update", rebundle);
 
-	return rebundle;
+	return rebundle();
 
 });
