@@ -1,0 +1,18 @@
+@sportsokken {
+	rename: no
+}
+
+h1 {
+	text-align: center;
+}
+
+.main {
+	width: 600px;
+	margin: 0 auto;
+}
+
+.left-column,
+.right-column {
+	float: left;
+	width: 50%;
+}
