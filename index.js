@@ -34,11 +34,12 @@ var Sportsokken = function(b, opts) {
 	this.b = b;
 	this.cache = {};
 
-	opts = _.extend({
-		dest: "./out/css/main.css"
+	this.opts = _.extend({
+		dest: "./out/css/main.css",
+		rename: true
 	}, opts);
-	var outputFile = path.basename(opts.dest);
-	var outputDir = path.dirname(opts.dest);
+	var outputFile = path.basename(this.opts.dest);
+	var outputDir = path.dirname(this.opts.dest);
 
 	console.log(outputFile);
 	console.log(outputDir);
@@ -85,7 +86,7 @@ _.extend(Sportsokken.prototype, {
 		
 		var self = this;
 		var buffer = "";
-		var rename = true;
+		var rename = this.opts.rename;
 
 		return through2(
 			function(data, enc, next) {
@@ -117,8 +118,15 @@ _.extend(Sportsokken.prototype, {
 												// TODO Remove declaration
 												if(selector == "@sportsokken") {
 													_(rule["declarations"]).each(function(declaration) {
-														if(declaration["property"] == "rename" && declaration["value"] == "no") {
-															rename = false;
+														if(declaration["property"] == "rename") {
+															switch(declaration["value"]) {
+																case "yes":
+																	rename = true;
+																	break;
+																case "no":
+																	rename = false;
+																	break;
+															}
 														}
 													});
 												}

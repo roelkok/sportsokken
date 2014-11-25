@@ -10,7 +10,8 @@ gulp.task("default", function() {
 	var b = sportsokken(
 		watchify(browserify("./src/main.js", watchify.args)),
 		{
-			dest: "./out/css/index.css"
+			dest: "./out/css/index.css",
+			rename: true
 		}
 	)
 		.transform(hbsfy);
