@@ -34,6 +34,7 @@ var Sportsokken = function(b, opts) {
 	this.b = b;
 	this.cache = {};
 
+	// Global opts
 	this.opts = _.extend({
 		dest: "./out/css/main.css",
 		rename: true
@@ -86,7 +87,8 @@ _.extend(Sportsokken.prototype, {
 		
 		var self = this;
 		var buffer = "";
-		var rename = this.opts.rename;
+		// Local opts
+		opts = _.extend({}, this.opts, opts);
 
 		return through2(
 			function(data, enc, next) {
@@ -112,23 +114,13 @@ _.extend(Sportsokken.prototype, {
 										memo = Object.create(memo);
 
 										if(key == "selectors") {
+											// Add (renamed) class names to map
 											memo[key] = _(value).map(function(selector) {
 												// Check for stylesheet specific options
 												// TODO If this is not at the top of the file there might be problems currently
 												// TODO Remove declaration
 												if(selector == "@sportsokken") {
-													_(rule["declarations"]).each(function(declaration) {
-														if(declaration["property"] == "rename") {
-															switch(declaration["value"]) {
-																case "yes":
-																	rename = true;
-																	break;
-																case "no":
-																	rename = false;
-																	break;
-															}
-														}
-													});
+													parseSportsokkenDeclarations(rule["declarations"], opts);
 												}
 
 												// Search selector for class names and replace them
@@ -136,7 +128,7 @@ _.extend(Sportsokken.prototype, {
 												return selector.replace(/\.([_a-z][_a-z0-9-]*)/gi, function(match, cssClassName) {
 													var key = camelCase(cssClassName);
 													if(!map[key]) {
-														if(rename) {
+														if(opts.rename) {
 															map[key] = prefix + counter.toString(36);
 															counter++;
 														}
@@ -149,6 +141,7 @@ _.extend(Sportsokken.prototype, {
 											});
 										}
 										else {
+											// Copy other properties. Like "declarations".
 											memo[key] = deepCopy(value);
 										}
 
@@ -177,5 +170,20 @@ _.extend(Sportsokken.prototype, {
 	}
 
 });
+
+function parseSportsokkenDeclarations(declarations, opts) {
+	_(declarations).each(function(declaration) {
+		if(declaration["property"] == "rename") {
+			switch(declaration["value"]) {
+				case "yes":
+					opts.rename = true;
+					break;
+				case "no":
+					opts.rename = false;
+					break;
+			}
+		}
+	});
+}
 
 module.exports = Sportsokken;
