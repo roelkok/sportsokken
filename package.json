@@ -1,6 +1,6 @@
 {
   "name": "sportsokken",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Require css from your node modules and obfuscates css class names to avoid collisions",
   "main": "index.js",
   "scripts": {
