@@ -10,11 +10,17 @@ gulp.task("default", function() {
 	var b = sportsokken(
 		watchify(browserify("./src/main.js", watchify.args)),
 		{
-			dest: "./out/css/index.css",
+			dest: pipeCss,
 			rename: true
 		}
 	)
 		.transform(hbsfy);
+
+	function pipeCss(cssStream) {
+		cssStream
+			.pipe(source("index-piped.css"))
+			.pipe(gulp.dest("./out/css"));
+	}
 	
 	function rebundle() {
 		return b

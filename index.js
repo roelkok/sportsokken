@@ -57,9 +57,14 @@ var Sportsokken = function(b, opts) {
 			function(end) {
 				// Clean up cache
 				self.cache = _(self.cache).pick(self.deps);
-				self.cssStream
-					.pipe(source(outputFile))
-					.pipe(dest(outputDir));
+				if(typeof self.opts.dest == "function") {
+					self.opts.dest(self.cssStream);
+				}
+				else {
+					self.cssStream
+						.pipe(source(outputFile))
+						.pipe(dest(outputDir));
+				}
 				end();
 			}
 		));
