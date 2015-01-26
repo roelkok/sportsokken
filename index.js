@@ -39,11 +39,12 @@ var Sportsokken = function(b, opts) {
 		dest: "./out/css/main.css",
 		rename: true
 	}, opts);
-	var outputFile = path.basename(this.opts.dest);
-	var outputDir = path.dirname(this.opts.dest);
 
-	console.log(outputFile);
-	console.log(outputDir);
+	var outputFile, outputDir;
+	if(typeof this.opts.dest != "function") {
+		outputFile = path.basename(this.opts.dest);
+		outputDir = path.dirname(this.opts.dest);
+	}
 
 	b.transform(this.transform);
 
