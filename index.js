@@ -159,6 +159,8 @@ _.extend(Sportsokken.prototype, {
 							}
 							else {
 								memo[key] = deepCopy(value);
+
+								return memo;
 							}
 						}, {});
 					}
